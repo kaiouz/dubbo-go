@@ -18,6 +18,7 @@
 package protocol
 
 import (
+	"os"
 	"sync"
 )
 
@@ -103,6 +104,17 @@ func (proto *registryProtocol) Refer(url common.URL) protocol.Invoker {
 func (proto *registryProtocol) Export(invoker protocol.Invoker) protocol.Exporter {
 	registryUrl := proto.getRegistryUrl(invoker)
 	providerUrl := proto.getProviderUrl(invoker)
+
+	// 覆盖注册的IP和端口
+	ipReg := os.Getenv("DUBBO_IP_TO_REGISTRY")
+	portReg := os.Getenv("DUBBO_PORT_TO_REGISTRY")
+
+	if ipReg != "" {
+		providerUrl.Ip = ipReg
+	}
+	if portReg != "" {
+		providerUrl.Port = portReg
+	}
 
 	var reg registry.Registry
 
