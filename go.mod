@@ -1,4 +1,4 @@
-module github.com/kaiouz/dubbo-go
+module github.com/apache/dubbo-go
 
 require (
 	github.com/Workiva/go-datastructures v1.0.50
