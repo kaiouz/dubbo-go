@@ -18,6 +18,7 @@
 package protocol
 
 import (
+	"os"
 	"strings"
 	"sync"
 )
@@ -131,11 +132,22 @@ func (proto *registryProtocol) Refer(url common.URL) protocol.Invoker {
 
 func (proto *registryProtocol) Export(invoker protocol.Invoker) protocol.Exporter {
 
+	registryUrl := getRegistryUrl(invoker)
+	providerUrl := getProviderUrl(invoker)
+
+	// 覆盖注册的IP和端口
+	ipReg := os.Getenv("DUBBO_IP_TO_REGISTRY")
+	portReg := os.Getenv("DUBBO_PORT_TO_REGISTRY")
+
+	if ipReg != "" {
+		providerUrl.Ip = ipReg
+	}
+	if portReg != "" {
+		providerUrl.Port = portReg
+	}
 	proto.once.Do(func() {
 		proto.initConfigurationListeners()
 	})
-	registryUrl := getRegistryUrl(invoker)
-	providerUrl := getProviderUrl(invoker)
 
 	overriderUrl := getSubscribedOverrideUrl(providerUrl)
 	// Deprecated! subscribe to override rules in 2.6.x or before.
